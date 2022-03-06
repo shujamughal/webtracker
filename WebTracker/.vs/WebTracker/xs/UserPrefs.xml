@@ -1,15 +1,20 @@
 ﻿<Properties StartupConfiguration="{C363B75F-C9F0-418F-908A-BF8F7202845B}|Default">
-  <MonoDevelop.Ide.ItemProperties.Server FirstBuild="True" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Server/Program.cs">
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Server/SuperWebSocket.cs">
     <Files>
-      <File FileName="Server/Program.cs" Line="1" Column="1" />
+      <File FileName="Server/Program.cs" Line="22" Column="34" />
+      <File FileName="Server/Fleck.cs" Line="24" Column="3" />
+      <File FileName="Server/SuperWebSocket.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="WebTracker" expanded="True">
             <Node name="Server" expanded="True">
-              <Node name="Program.cs" selected="True" />
+              <Node name="Dependencies" expanded="True">
+                <Node name="PackageDependencies" expanded="True" />
+              </Node>
+              <Node name="SuperWebSocket.cs" selected="True" />
             </Node>
           </Node>
         </State>
@@ -19,7 +24,9 @@
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/atiftalib/Documents/Github/WebTracker/Server/WebSocketSharp.cs" relfile="Server/WebSocketSharp.cs" line="29" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />
 </Properties>
