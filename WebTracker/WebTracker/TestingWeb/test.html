@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Testing Web</title>
+<script>
+
+    // create connection with the server
+    connection = new signalR.HubConnectionBuilder()
+        .configureLogging(signalR.LogLevel.Debug)
+        .withUrl("https://localhost:1983/server", {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
+        .build();
+
+</script>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>Testing Web</h1>
+</div>
+<div class="content">
+    <form>
+        <div>
+          <label for="sendMessage">Message: </label>
+          <input id="sendMessage" type="text" name="text">
+        </div>
+        <div>
+          <input type="button" value="Send">
+        </div>
+      </form>
+    <h2>Receive Messages</h2>
+    <ul>
+    </ul>
+</div>
+</body>
+</html>
