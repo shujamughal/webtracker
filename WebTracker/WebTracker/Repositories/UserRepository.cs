@@ -12,93 +12,19 @@ namespace WebTracker.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _context;
-        public UserRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-        public List<User> GetAllUsers()
-        {
-            //var users = _context.Users.Include(u => u.Web).Include(v => v.Location);
-           
-           return _context.Users
-                    .Include(u => u.Location)
-                    .Include(v => v.Web)
-                        .ThenInclude(w => w.Flows)
-                            .ThenInclude(x => x.Urls)
-                                .ThenInclude(y => y.Actions)
-                                    .ThenInclude(z => z.Data)
-                    .ToList();
-        }
-        // {
-        //     var users =  _context.Users.Select(x => new User
-        //     {
-        //         Id = x.Id,
-        //         VisitCount = x.VisitCount,
-        //         DeviceType = x.DeviceType,
-        //         Browser = x.Browser,
-        //         LastConnection = x.LastConnection,
-        //         Location = x.Location,
-        //         Website = x.Website
-
-        //     }).ToList();
-        //     return users;
-        // }
-        public User GetUserById(int id)
-        {
-            return _context.Users
-                    .Include(u => u.Location)
-                    .Include(v => v.Web)
-                        .ThenInclude(w => w.Flows)
-                            .ThenInclude(x => x.Urls)
-                                .ThenInclude(y => y.Actions)
-                                    .ThenInclude(z => z.Data)
-                    .FirstOrDefault(u => u.Id == id);
-
-            // return _context.Users
-            // .Where(z => z.Id == id)
-            // .Include(x => x.Web)
-            // .Include(y => y.Location)
-            // .FirstOrDefault();
-
-            
-            // try{
-            //     var user = _context.Users.Where(x => x.Id == id).Select(x => new User
-            //     {
-            //         Id = x.Id,
-            //         VisitCount = x.VisitCount,
-            //         DeviceType = x.DeviceType,
-            //         Browser = x.Browser,
-            //         LastConnection = x.LastConnection,
-            //         Location = x.Location,
-            //         Website = x.Website
-            //     }).FirstOrDefault();
-            //     return user;
-            // }catch(Exception e){
-            //     Console.WriteLine(e.Message);
-            //     return null;
-            // }   
-        }
+        public UserRepository(ApplicationDbContext context) => _context = context;
+        public List<User> GetAllUsers() => _context.Users.ToList();
+        public User GetUserById(int id) => _context.Users.FirstOrDefault(u => u.UserId == id);
         public bool AddUser(User user)
         {
-            try{
-                _context.Users.Add(user);
-                _context.SaveChanges();
-                return true;
-            }catch(Exception e){
-                Console.WriteLine(e.Message);
-                return false;
-            }
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return true;
         }
         public bool DeleteUser(int id)
         {
             var user = _context.Users
-                        .Include(u => u.Location)
-                        .Include(v => v.Web)
-                            .ThenInclude(w => w.Flows)
-                                .ThenInclude(x => x.Urls)
-                                    .ThenInclude(y => y.Actions)
-                                        .ThenInclude(z => z.Data)
-                        .Where(x => x.Id == id)
+                        .Where(x => x.UserId == id)
                         .FirstOrDefault();
             if (user != null)
             {
@@ -112,21 +38,14 @@ namespace WebTracker.Repositories
         {
             var userToUpdate = _context
                                 .Users
-                                .Where(t => t.Id == id)
-                                .Include(u => u.Location)
-                                .Include(v => v.Web)
-                                    .ThenInclude(w => w.Flows)
-                                        .ThenInclude(x => x.Urls)
-                                            .ThenInclude(y => y.Actions)
-                                                .ThenInclude(z => z.Data)
+                                .Where(u => u.UserId == id)
                                 .FirstOrDefault();
             if(userToUpdate != null)
             {
                 userToUpdate.DeviceType = user.DeviceType;
                 userToUpdate.Browser = user.Browser;
                 userToUpdate.LastConnection = user.LastConnection;
-                userToUpdate.Location = user.Location;
-                userToUpdate.Web = user.Web;
+                userToUpdate.Address = user.Address;
                 _context.SaveChanges();
                 return true;
             }

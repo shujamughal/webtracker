@@ -3,31 +3,65 @@
 <head>
 <meta charset="utf-8">
 <title>Testing Web</title>
-<script src="../wwwroot/js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+
 </head>
 <body>
 <div class="container">
 <div class="header">
-<h1>Testing Web</h1>
+  <h1>Testing Web</h1>
 </div>
 <div class="content">
-<h2>Welcome to Testing Web</h2>
-<p>This is a web site dedicated to testing web applications.</p>
-<p>This web site is designed to test the following web applications:</p>
-<form action="">
-    <label for="fname">First name:</label>
-    <input type="text" id="fname" name="fname"><br><br>
-    <label for="lname">Last name:</label>
-    <input type="text" id="lname" name="lname"><br><br>
-    <input type="submit" value="Submit">
-    <input type="submit" formtarget="_blank" value="Submit to a new window/tab">
-  </form>
-<ul>
-    <li><a href="./index.html">Index</a></li>
-    <li><a href="./first.html">First</a></li>
-    <li><a href="./second.html">Second</a></li>
-    <li><a href="./third.html">Third</a></li>
+  <div>
+    <label for="message">Message: </label>
+    <input type="text" id="message" name="message" placeholder="Enter Your Message...">
+  </div>
+  <div>
+    <button id="send">Send</button>
+  </div>
+<h2>Received Messages</h2>
+<ul id = "messageList">
+
 </ul>
 </div>
 </body>
+<script>
+
+  // create the connection to the server
+  connection = new signalR.HubConnectionBuilder()
+      .configureLogging(signalR.LogLevel.Debug)
+      .withUrl("https://localhost:5001/server", {
+          skipNegotiation: true,
+          transport: signalR.HttpTransportType.WebSockets
+      })
+      .build();
+
+  // start connection
+  connection.start().catch(err => console.error(err.toString()));
+
+  // Receive Message from the server
+  connection.on("ReceiveMessage", (message) => {
+    console.log(message);
+      const li = document.createElement("li");
+      li.textContent = message;
+      console.log(li);
+      document.getElementById("messageList").appendChild(li);
+  });
+
+  // Send Message to the server
+  const sendButton = document.getElementById("send");
+  console.log(sendButton);
+  sendButton.addEventListener("click", event => {
+      const userInput = document.getElementById("message");
+      const message = userInput.value;
+      userInput.value = "";
+      connection.invoke("ReceiveMessage", message).catch(err => console.error(err.toString()));
+  });
+
+  // on close connection
+  connection.onclose(() => {
+      console.log("Connection closed");
+  });
+
+</script>
 </html>

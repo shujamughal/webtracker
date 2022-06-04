@@ -8,7 +8,7 @@ namespace WebTracker.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-
+            
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Address> Addresses { get; set; }
@@ -16,5 +16,6 @@ namespace WebTracker.Data
         public DbSet<Flow> Flows { get; set; }
         public DbSet<Models.Action> Actions { get; set; }
         public DbSet<ActionData> ActionsData { get; set; }
+        public DbSet <Url> Urls { get; set; }
     }
 }

@@ -9,10 +9,10 @@ namespace WebTracker.Models
 {
     public class Flow
     {
-        [Key]
-        public int Id { get; set; }
+        public int FlowId { get; set; }
         public List<Url> Urls { get; set; } = new List<Url>();
-        public int WebsiteId { get; set; }
-        public virtual Website Website { get; set; }
+
+        public int UserId { get; set; }
+        public User User { get; set; }
     }
 }

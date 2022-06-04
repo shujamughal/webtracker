@@ -1,31 +1,39 @@
-﻿<Properties StartupConfiguration="{C363B75F-C9F0-418F-908A-BF8F7202845B}|Default">
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Server/SuperWebSocket.cs">
+﻿<Properties StartupConfiguration="{646FDBAE-D2F3-4018-B200-FA81FAEA2751}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="WebTracker/Hubs/ServerHub.cs">
     <Files>
-      <File FileName="Server/Program.cs" Line="22" Column="34" />
-      <File FileName="Server/Fleck.cs" Line="24" Column="3" />
-      <File FileName="Server/SuperWebSocket.cs" Line="1" Column="1" />
+      <File FileName="WebTracker/Startup.cs" Line="1" Column="1" />
+      <File FileName="WebTracker/Program.cs" Line="1" Column="1" />
+      <File FileName="WebTracker/Hubs/ServerHub.cs" Line="62" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="WebTracker" expanded="True">
-            <Node name="Server" expanded="True">
-              <Node name="Dependencies" expanded="True">
-                <Node name="PackageDependencies" expanded="True" />
+            <Node name="WebTracker" expanded="True">
+              <Node name="Hubs" expanded="True">
+                <Node name="ServerHub.cs" selected="True" />
               </Node>
-              <Node name="SuperWebSocket.cs" selected="True" />
             </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.WebTracker PreferredExecutionTarget="/Applications/Safari.app" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <DisabledProjects>
+    <String>Server/Server.csproj</String>
+    <String>SignalR/SignalR.csproj</String>
+  </DisabledProjects>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/atiftalib/Documents/Github/WebTracker/Server/WebSocketSharp.cs" relfile="Server/WebSocketSharp.cs" line="29" column="1" />
+      <Breakpoint enabled="false" file="/Users/atiftalib/Documents/Github/WebTracker/SignalRWeb/Program.cs" relfile="SignalRWeb/Program.cs" line="16" column="1" />
+      <Breakpoint file="/Users/atiftalib/Documents/Github/WebTracker/WebTracker/Hubs/ServerHub.cs" relfile="WebTracker/Hubs/ServerHub.cs" line="39" column="1" />
+      <Breakpoint file="/Users/atiftalib/Documents/Github/WebTracker/WebTracker/Hubs/ServerHub.cs" relfile="WebTracker/Hubs/ServerHub.cs" line="56" column="1" />
+      <Breakpoint file="/Users/atiftalib/Documents/Github/WebTracker/WebTracker/Hubs/ServerHub.cs" relfile="WebTracker/Hubs/ServerHub.cs" line="67" column="1" />
+      <Breakpoint file="/Users/atiftalib/Documents/Github/WebTracker/WebTracker/Hubs/ServerHub.cs" relfile="WebTracker/Hubs/ServerHub.cs" line="92" column="1" />
+      <Breakpoint file="/Users/atiftalib/Documents/Github/WebTracker/WebTracker/Hubs/ServerHub.cs" relfile="WebTracker/Hubs/ServerHub.cs" line="129" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

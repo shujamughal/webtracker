@@ -9,8 +9,10 @@ namespace WebTracker.Models
 {
     public class ActionData
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Data { get; set; }
+        public int ActionDataId { get; set; }
+        public string Name { get; set; } = "";
+        public string Data { get; set; } = "";
+        public int ActionId { get; set; }
+        public Action Action { get; set; }
     }
 }

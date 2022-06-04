@@ -9,13 +9,12 @@ namespace WebTracker.Models
 {
     public class Action
     {
-        [Key]
-        public string Id { get; set; }
-        public string Type { get; set; }
-        public string Content { get; set; }
+        public int ActionId { get; set; }
+        public string Type { get; set; } = "";
+        public string Content { get; set; } = "";
         public List<ActionData> Data { get; set; } = new List<ActionData>();
-        [ForeignKey("Url")]
+
         public int UrlId { get; set; }
-        public virtual Url Url { get; set; }
+        public Url Url { get; set; }
     }
 }

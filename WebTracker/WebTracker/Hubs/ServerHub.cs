@@ -9,319 +9,255 @@ namespace WebTracker.Hubs
 {
     public class ServerHub : Hub
     {
+        IWebsiteRepository _websiteRepository;
         IUserRepository _userRepository;
-        public ServerHub(IUserRepository userRepository)
+        IFlowRepository _flowRepository;
+        IUrlRepository _urlRepository;
+        IActionRepository _actionRepository;
+        IActionDataRepository _actionDataRepository;
+        public ServerHub(IWebsiteRepository websiteRepository, IUserRepository userRepository, IFlowRepository flowRepository, IUrlRepository urlRepository, IActionRepository actionRepository, IActionDataRepository actionDataRepository)
         {
+            _websiteRepository = websiteRepository;
             _userRepository = userRepository;
+            _flowRepository = flowRepository;
+            _urlRepository = urlRepository;
+            _actionRepository = actionRepository;
+            _actionDataRepository = actionDataRepository;
         }
         public override Task OnConnectedAsync()
         {
             Console.WriteLine("User Connected");
             return base.OnConnectedAsync();
         }
-        public void ReceiveFormData(string data)
+        public void ReceiveFormData(string urlId, string data)
         {
+            // add new action in the database
+            Models.Action action = new Models.Action()
+            {
+                Type = "Form",
+                Content = "Form Data",
+                UrlId = Convert.ToInt32(urlId)
+            };
+            _actionRepository.AddAction(action);
+
+            // add new action data in the database
             JObject dataObj = JObject.Parse(data);
+
+            foreach (var item in dataObj)
+            {
+                ActionData actionData = new ActionData()
+                {
+                    Name = item.Key,
+                    Data = item.Value.ToString(),
+                    ActionId = action.ActionId
+                };
+                _actionDataRepository.AddActionData(actionData);
+            }
             Console.WriteLine("Form Data Submitted: " + dataObj);
         }
-        public void ReceiveAction(string action, string data)
+        public void ReceiveAction(string urlId, string action, string data)
         {
+            // add new action in the database
+            Models.Action actionObj = new Models.Action()
+            {
+                Type = action,
+                Content = data,
+                UrlId = Convert.ToInt32(urlId)
+            };
+            _actionRepository.AddAction(actionObj);
+
+            // add new action data in the database
+            ActionData actionData = new ActionData()
+            {
+                Name = action,
+                Data = data,
+                ActionId = actionObj.ActionId
+            };
+            _actionDataRepository.AddActionData(actionData);
+
             Console.WriteLine("Action Performed: " + action);
             Console.WriteLine("Action Data: " + data);
         }
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            Console.WriteLine("User Disconnected: " + exception.Message);
+            Console.WriteLine("User Disconnected");
             return base.OnDisconnectedAsync(exception);
         }
         public Task AddNewUser(string web, string url, string deviceType, string browser, string location)
         {
-//            List<User> users = _userRepository.GetAllUsers();
-            Console.WriteLine("New User Connected to " + url + " from " + browser + " with " + deviceType);
+            // check if website is in the database
+            int websiteId = _websiteRepository.GetWebsiteIdByName(web);
+
+            // add or update website in database
+            Website website;
+            if(websiteId == -1)
+            {
+                website = new Website()
+                {
+                    Web= web,
+                    VisitCount = 1
+                };
+                _websiteRepository.AddWebsite(website);
+                websiteId = website.WebsiteId;
+            }
+            else
+            {
+                website = _websiteRepository.GetWebsiteById(websiteId);
+                website.VisitCount++;
+                _websiteRepository.UpdateWebsite(websiteId, website);
+            }
+
+            // add new user in the database
             JObject userLocation = JObject.Parse(location);
-            
-            ActionData actionData = new()
-            {
-                Name = "PageView",
-                Data = url,
-            };
-            Models.Action action = new()
-            {
-                Type = "PageView",
-                Content = url,
-                Data = new List<ActionData>()
-                {
-                    actionData
-                }
-            };
-            Url urlObj = new()
-            {
-                WebUrl = url,
-                Actions = new List<Models.Action>()
-                {
-                    action
-                }
-            };
-            Flow flow= new()
-            {
-                Urls = new List<Url>()
-                {
-                    urlObj
-                }
-            };
-            Website website = new()
-            {
-                Web = web,
-                VisitCount = 1,
-                Flows = new List<Flow>()
-                {
-                    flow
-                }
-            };
-            Address Location = new()
-            {
-                CountryCode = userLocation["country_code"].ToString(),
-                CountryName = userLocation["country_name"].ToString(),
-                City = userLocation["city"].ToString(),
-                Postal = userLocation["postal"].ToString(),
-                Latitude = userLocation["latitude"].ToString(),
-                Longitude = userLocation["longitude"].ToString(),
-                IPv4 = userLocation["IPv4"].ToString(),
-                State = userLocation["state"].ToString()
-            };
-            User user = new()
+            User user = new User()
             {
                 DeviceType = deviceType,
                 Browser = browser,
                 LastConnection = DateTime.Now,
-                Location = Location,
-                Web = new ()
+                Address = new Address()
                 {
-                    website
-                }
+                    CountryCode = userLocation["country_code"].ToString(),
+                    CountryName = userLocation["country_name"].ToString(),
+                    City = userLocation["city"].ToString(),
+                    Postal = userLocation["postal"].ToString(),
+                    Latitude = userLocation["latitude"].ToString(),
+                    Longitude = userLocation["longitude"].ToString(),
+                    IPv4 = userLocation["IPv4"].ToString(),
+                    State = userLocation["state"].ToString()
+                },
+                WebsiteId = websiteId,
             };
-            
-            // action.Data.Add(actionData);
-            // urlObj.Actions.Add(action);
-            // flow.Urls.Add(urlObj);
-            // website.Flows.Add(flow);
-            // user.Web.Add(website);
-
-            /*
-            user.Web.Add(new Website()
-            {
-                Web = web,
-                VisitCount = 1,
-                Flows = new List<Flow>()
-                {
-                    new Flow()
-                    {
-                        Urls = new List<Url>()
-                        {
-                            new Url()
-                            {
-                                WebUrl = url,
-                                Actions = new List<Models.Action>()
-                                {
-                                    new Models.Action()
-                                    {
-                                        Type = "PageView",
-                                        Content = url,
-                                        Data = new List<ActionData>()
-                                        {
-                                            new ActionData()
-                                            {
-                                                Name = "PageView",
-                                                Data = url
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            */
             _userRepository.AddUser(user);
-            string functionName = "AddNewUser";
-            string userCookie = "webtracker_user";
-            string userIdValue = user.Id.ToString();
-            string webCookie = "webtracker_web" + web;
-            string webIdValue = website.Id.ToString();
-            string flowSession = "webtracker_flow" + web;
-            string flowIdValue = flow.Id.ToString();
-            return Clients.Caller.SendAsync(functionName, userCookie, userIdValue, webCookie, webIdValue, flowSession, flowIdValue);
-        }
-        public Task NewWeb(string userId, string web, string url)
-        {
-            User user = _userRepository.GetUserById(Int16.Parse(userId));
-            user.LastConnection = DateTime.Now;
-            /*
-            Website website = new()
-            {
-                Web = web,
-                VisitCount = 1,
-                Flows = new List<Flow>()
-                {
-                    new Flow()
-                    {
-                        Urls = new List<Url>()
-                        {
-                            new Url()
-                            {
-                                WebUrl = web,
-                                Actions = new List<Models.Action>()
-                                {
-                                    new Models.Action()
-                                    {
-                                        Type = "PageView",
-                                        Content = web,
-                                        Data = new List<ActionData>()
-                                        {
-                                            new ActionData()
-                                            {
-                                                Name = "PageView",
-                                                Data = web
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            */
-            Website website = new()
-            {
-                Web = web,
-                VisitCount = 1
-            };
-            Flow flow= new();
-            Url urlObj = new()
-            {
-                WebUrl = url,
-            };
-            Models.Action action = new()
-            {
-                Type = "PageView",
-                Content = url,
-            };
-            ActionData actionData = new()
-            {
-                Name = "PageView",
-                Data = url,
-            };
-            action.Data.Add(actionData);
-            urlObj.Actions.Add(action);
-            flow.Urls.Add(urlObj);
-            website.Flows.Add(flow);
-            user.Web.Add(website);
-            _userRepository.UpdateUser(int.Parse(userId), user);
 
-            string functionName = "AddNewUser";
-            string userCookie = "webtracker_user";
-            string userIdValue = user.Id.ToString();
-            string webCookie = "webtracker_web" + web;
-            string webIdValue = website.Id.ToString();
-            string flowSession = "webtracker_flow" + web;
-            string flowIdValue = flow.Id.ToString();
-            return Clients.Caller.SendAsync(functionName, userCookie, userIdValue, webCookie, webIdValue, flowSession, flowIdValue);
-        
-        }
-        public Task ExistingWeb(string userId, string webId, string web)
-        {
-            User user = _userRepository.GetUserById(Int16.Parse(userId));
-            Website website = user.Web.Find(x => x.Id == Int16.Parse(webId)); 
+            // add new flow in the database
             Flow flow = new Flow()
             {
-                Urls = new List<Url>()
-                {
-                    new Url()
-                    {
-                        WebUrl = web,
-                        Actions = new List<Models.Action>()
-                        {
-                            new Models.Action()
-                            {
-                                Type = "PageView",
-                                Content = web,
-                                Data = new List<ActionData>()
-                                {
-                                    new ActionData()
-                                    {
-                                        Name = "PageView",
-                                        Data = web
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                UserId = user.UserId
             };
-            website.Web = web;
-            website.Flows.Add(flow);
-            website.VisitCount++;
-            user.LastConnection = DateTime.Now;
-            _userRepository.UpdateUser(int.Parse(userId), user);
-            return Clients.Caller.SendAsync("SaveWebSession", "webtracker_flow" + web, flow.Id.ToString());
-        }
-        public void SetLocation(string user, string location)
-        {
-            List<User> users = _userRepository.GetAllUsers();
-            if(user == "")
-            {
-                return;
-            }
-            JObject userLocation = JObject.Parse(location);
-            User _user = _userRepository.GetUserById(int.Parse(user));
-            if (_user != null)
-            {
-                _user.Location.CountryCode = userLocation["country_code"].ToString();
-                _user.Location.CountryName = userLocation["country_name"].ToString();
-                _user.Location.City = userLocation["city"].ToString();
-                _user.Location.Postal = userLocation["postal"].ToString();
-                _user.Location.Latitude = userLocation["latitude"].ToString();
-                _user.Location.Longitude = userLocation["longitude"].ToString();
-                _user.Location.IPv4 = userLocation["IPv4"].ToString();
-                _user.Location.State = userLocation["state"].ToString();
-                _userRepository.UpdateUser(_user.Id, _user);
-                
-            }
-            Console.WriteLine("User location details are: " + userLocation);
-        }
-        public void ExistingFlow(string userId, string webId, string url)
-        {
-            List<User> users = _userRepository.GetAllUsers();
-            if (userId == "")
-                return;
-            User user = _userRepository.GetUserById(int.Parse(userId));
-            Website website = user.Web.Find(x => x.Id == Int16.Parse(webId));
-            Flow flow = website.Flows.Find(x => x.Id == Int16.Parse(webId));
-            Url newUrl = new Url()
+            _flowRepository.AddFlow(flow);
+
+            // add new url in the database
+            Url urlObj = new Url()
             {
                 WebUrl = url,
-                Actions = new List<Models.Action>()
-                {
-                    new Models.Action()
-                    {
-                        Type = "PageView",
-                        Content = url,
-                        Data = new List<ActionData>()
-                        {
-                            new ActionData()
-                            {
-                                Name = "PageView",
-                                Data = url
-                            }
-                        }
-                    }
-                }
+                FlowId = flow.FlowId
             };
-            flow.Urls.Add(newUrl);
-            _userRepository.UpdateUser(int.Parse(userId), user);
-            Console.WriteLine(url);
+            _urlRepository.AddUrl(urlObj);
+
+            // add new action in the database
+            Models.Action action = new Models.Action()
+            {
+                Type = "Page Load",
+                Content = url,
+                UrlId = urlObj.UrlId
+            };
+            _actionRepository.AddAction(action);
+
+            // add new action data in the database
+            ActionData actionData = new ActionData()
+            {
+                Name = "Page Load",
+                Data = url,
+                ActionId = action.ActionId
+            };
+            _actionDataRepository.AddActionData(actionData);
+
+            Console.WriteLine("New User Connected to " + url + " from " + browser + " with " + deviceType);
+            
+            string functionName = "AddNewUser";
+            string userCookie = "webtracker_user";
+            string userIdValue = user.UserId.ToString();
+            string webCookie = "webtracker_web" + web;
+            string webIdValue = website.WebsiteId.ToString();
+            string flowSession = "webtracker_flow" + web;
+            string flowIdValue = flow.FlowId.ToString();
+            string urlSession = "webtracker_url" + url;
+            string urlIdValue = urlObj.UrlId.ToString();
+            return Clients.Caller.SendAsync(functionName, userCookie, userIdValue, webCookie, webIdValue, flowSession, flowIdValue, urlSession, urlIdValue);
+        }
+        public Task ExistingUser(string websiteId, string userId, string url)
+        {
+            // update visit count of the website
+            Website website = _websiteRepository.GetWebsiteById(Convert.ToInt32(websiteId));
+            website.VisitCount++;
+            _websiteRepository.UpdateWebsite(Convert.ToInt32(websiteId), website);
+
+            // create new flow
+            Flow flow = new Flow()
+            {
+                UserId = Convert.ToInt32(userId)
+            };
+            _flowRepository.AddFlow(flow);
+
+            // create new url
+            Url urlObj = new Url()
+            {
+                WebUrl = url,
+                FlowId = flow.FlowId
+            };
+            _urlRepository.AddUrl(urlObj);
+
+            // create new action
+            Models.Action action = new Models.Action()
+            {
+                Type = "Page Load",
+                Content = url,
+                UrlId = urlObj.UrlId
+            };
+            _actionRepository.AddAction(action);
+
+            // create new action data
+            ActionData actionData = new ActionData()
+            {
+                Name = "Page Load",
+                Data = url,
+                ActionId = action.ActionId
+            };
+            _actionDataRepository.AddActionData(actionData);
+
+            Console.WriteLine("Existing User Connected to " + website.Web);
+
+            string functionName = "ExistingUser";
+            string flowSession = "webtracker_flow" + website.Web;
+            string flowIdValue = flow.FlowId.ToString();
+            string urlSession = "webtracker_url" + url;
+            string urlIdValue = urlObj.UrlId.ToString();
+            return Clients.Caller.SendAsync(functionName, flowSession, flowIdValue, urlSession, urlIdValue);
+        }
+        public Task ExistingFlow(string flowId, string url)
+        {
+            // create new url
+            Url urlObj = new Url()
+            {
+                WebUrl = url,
+                FlowId = Convert.ToInt32(flowId)
+            };
+            _urlRepository.AddUrl(urlObj);
+
+            // create new action
+            Models.Action action = new Models.Action()
+            {
+                Type = "Page Load",
+                Content = url,
+                UrlId = urlObj.UrlId
+            };
+            _actionRepository.AddAction(action);
+
+            // create new action data
+            ActionData actionData = new ActionData()
+            {
+                Name = "Page Load",
+                Data = url,
+                ActionId = action.ActionId
+            };
+            _actionDataRepository.AddActionData(actionData);
+
+            Console.WriteLine("Existing Flow Connected to " + url);
+
+            string functionName = "ExistingFlow";
+            string urlSession = "webtracker_url" + url;
+            string urlIdValue = urlObj.UrlId.ToString();
+            return Clients.Caller.SendAsync(functionName, urlSession, urlIdValue);
         }
     }
 }

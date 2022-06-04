@@ -11,7 +11,5 @@ namespace WebTracker.Repositories
         bool AddUser(User user);
         bool DeleteUser(int id);
         bool UpdateUser(int id, User user);
-        
-
     }
 }

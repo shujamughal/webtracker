@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebTracker.Data;
 
+#nullable disable
+
 namespace WebTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
@@ -15,25 +17,31 @@ namespace WebTracker.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("WebTracker.Models.Action", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ActionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionId"), 1L, 1);
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UrlId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("ActionId");
 
                     b.HasIndex("UrlId");
 
@@ -42,21 +50,24 @@ namespace WebTracker.Migrations
 
             modelBuilder.Entity("WebTracker.Models.ActionData", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ActionDataId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
 
-                    b.Property<string>("ActionId")
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionDataId"), 1L, 1);
+
+                    b.Property<int>("ActionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Data")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ActionDataId");
 
                     b.HasIndex("ActionId");
 
@@ -65,123 +76,142 @@ namespace WebTracker.Migrations
 
             modelBuilder.Entity("WebTracker.Models.Address", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("AddressId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AddressId"), 1L, 1);
 
                     b.Property<string>("City")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CountryCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CountryName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IPv4")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Latitude")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Longitude")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Postal")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasKey("AddressId");
 
                     b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("WebTracker.Models.Flow", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("FlowId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("WebsiteId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlowId"), 1L, 1);
 
-                    b.HasIndex("WebsiteId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FlowId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Flows");
                 });
 
             modelBuilder.Entity("WebTracker.Models.Url", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UrlId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UrlId"), 1L, 1);
 
                     b.Property<int>("FlowId")
                         .HasColumnType("int");
 
+                    b.Property<int>("LoadTime")
+                        .HasColumnType("int");
+
                     b.Property<string>("WebUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("UrlId");
 
                     b.HasIndex("FlowId");
 
-                    b.ToTable("Url");
+                    b.ToTable("Urls");
                 });
 
             modelBuilder.Entity("WebTracker.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Browser")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeviceType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LastConnection")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<int>("WebsiteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("AddressId");
+
+                    b.HasIndex("WebsiteId");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("WebTracker.Models.Website", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("WebsiteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WebsiteId"), 1L, 1);
 
                     b.Property<int>("VisitCount")
                         .HasColumnType("int");
 
                     b.Property<string>("Web")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("WebsiteId");
 
                     b.ToTable("Websites");
                 });
@@ -199,31 +229,24 @@ namespace WebTracker.Migrations
 
             modelBuilder.Entity("WebTracker.Models.ActionData", b =>
                 {
-                    b.HasOne("WebTracker.Models.Action", null)
+                    b.HasOne("WebTracker.Models.Action", "Action")
                         .WithMany("Data")
-                        .HasForeignKey("ActionId");
-                });
-
-            modelBuilder.Entity("WebTracker.Models.Address", b =>
-                {
-                    b.HasOne("WebTracker.Models.User", "User")
-                        .WithOne("Location")
-                        .HasForeignKey("WebTracker.Models.Address", "UserId")
+                        .HasForeignKey("ActionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Action");
                 });
 
             modelBuilder.Entity("WebTracker.Models.Flow", b =>
                 {
-                    b.HasOne("WebTracker.Models.Website", "Website")
-                        .WithMany()
-                        .HasForeignKey("WebsiteId")
+                    b.HasOne("WebTracker.Models.User", "User")
+                        .WithMany("Flows")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Website");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebTracker.Models.Url", b =>
@@ -237,15 +260,23 @@ namespace WebTracker.Migrations
                     b.Navigation("Flow");
                 });
 
-            modelBuilder.Entity("WebTracker.Models.Website", b =>
+            modelBuilder.Entity("WebTracker.Models.User", b =>
                 {
-                    b.HasOne("WebTracker.Models.User", "User")
-                        .WithMany("Web")
-                        .HasForeignKey("UserId")
+                    b.HasOne("WebTracker.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("WebTracker.Models.Website", "Website")
+                        .WithMany()
+                        .HasForeignKey("WebsiteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+
+                    b.Navigation("Website");
                 });
 
             modelBuilder.Entity("WebTracker.Models.Action", b =>
@@ -260,9 +291,7 @@ namespace WebTracker.Migrations
 
             modelBuilder.Entity("WebTracker.Models.User", b =>
                 {
-                    b.Navigation("Location");
-
-                    b.Navigation("Web");
+                    b.Navigation("Flows");
                 });
 #pragma warning restore 612, 618
         }
