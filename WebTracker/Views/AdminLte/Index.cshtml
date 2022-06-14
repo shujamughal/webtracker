@@ -1,0 +1,66 @@
+@model IEnumerable<Website>
+@{
+    ViewData["Title"] = "Websites";
+}
+
+    
+<!-- All Websites -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Websites Being Tracked</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <table id="websitesDetails" class="table table-bordered table-striped">
+          <thead>
+          <tr>
+            <th>Web Urls</th>
+            <th>Vistors Count</th>
+            <th>Visit Count</th>
+          </tr>
+          </thead>
+          <tbody>
+          @foreach (var website in Model){
+            <tr>
+              <td>
+                <a asp-controller="AdminLte" asp-action="WebsiteDetails" asp-route-id=@website.WebsiteId>
+                  @website.Web
+                </a>
+              </td>
+              <td>
+                @website.Users.Count()
+              </td>
+              <td>
+                @website.VisitCount
+              </td>
+            </tr>
+          }
+          </tbody>
+        </table>
+      </div>
+      <!-- /.card-body -->
+    </div>
+  </div>
+</div>
+<!-- /.row -->
+
+
+<!-- page script -->
+@section scripts {
+  <script>
+    $(function () {
+      $('#websitesDetails').dataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": false,
+        "info": true,
+        "autoWidth": true,
+        "responsive": true,
+      });
+    });
+  </script>
+
+}

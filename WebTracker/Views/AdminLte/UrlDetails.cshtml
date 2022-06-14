@@ -1,0 +1,63 @@
+@model WebTracker.Models.Url
+@{
+    ViewData["Title"] = "Url Details";
+}
+
+
+<!-- Url Details-->
+<div class="row">
+<div class="col-12">
+    <div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Actions Performed On Url</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="urlDetails" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>Content</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var action in Model.Actions){
+                <tr>
+                    <td>@action.Type</td>
+                    <td>@action.Content</td>
+                </tr>
+                @if(action.Type != "Page Load"){
+                    @foreach (var data in action.Data){
+                        <tr>
+                            <td>@data.Name</td>
+                            <td>@data.Data</td>
+                        </tr>
+                    }
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+    <!-- /.card-body -->
+    </div>
+</div>
+</div>
+<!-- /.row -->
+
+@section scripts {
+    <script>
+        $(function () {
+            {($('#urlDetails')).DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": false,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+            }
+        });
+    </script>
+}
+              

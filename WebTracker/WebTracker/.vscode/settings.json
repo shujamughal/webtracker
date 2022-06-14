@@ -1,4 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "/subscriptions/811c7272-b4b0-4bc4-a2bc-e46ead10c15f/microsoft.web/sites/subscriptions/811c7272-b4b0-4bc4-a2bc-e46ead10c15f/resourceGroups/appsvc_windows_centralus/providers/Microsoft.Web/sites/atifswebtracker",
-    "appService.deploySubpath": "publish"
-}
